@@ -1,0 +1,80 @@
+package az.university.teacher_service.controller;
+
+
+import az.university.teacher_service.client.AttendanceClient;
+import az.university.teacher_service.request.CreateAttendanceRequest;
+import az.university.teacher_service.request.CreateTeacherRequest;
+import az.university.teacher_service.response.TeacherAddResponse;
+import az.university.teacher_service.response.TeacherListResponse;
+import az.university.teacher_service.response.TeacherSingleResponse;
+import az.university.teacher_service.service.TeacherService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/teachers")
+public class TeacherController {
+
+
+    private TeacherService teacherService;
+    private AttendanceClient attendanceClient;
+
+    public TeacherController(TeacherService teacherService,AttendanceClient attendanceClient) {
+        this.teacherService = teacherService;
+        this.attendanceClient = attendanceClient;
+    }
+
+
+    @PostMapping("/registration")
+    public ResponseEntity<TeacherAddResponse> create(@RequestBody final CreateTeacherRequest request) {
+
+        TeacherAddResponse response = teacherService.create(request);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+    }
+    @PostMapping("/{teacherId}/attendance")
+    public ResponseEntity<String> markAttendance(@PathVariable Long teacherId,@RequestBody CreateAttendanceRequest request){
+
+        String status = teacherService.markAttendance(teacherId,request);
+
+        return new  ResponseEntity<>(status, HttpStatus.CREATED);
+
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<TeacherListResponse> getAllTeachers() {
+
+        TeacherListResponse response = teacherService.getAllTeachers();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{teacherId}")
+    public ResponseEntity<TeacherSingleResponse> getTeacherById(@PathVariable Long teacherId) {
+
+        TeacherSingleResponse response = teacherService.getTeacherById(teacherId);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PatchMapping("/activate")
+    public ResponseEntity<Void> activateTeacher(@PathVariable Long studentId) {
+
+        teacherService.activateTeacher(studentId);
+
+        return ResponseEntity.ok().build();
+
+    }
+
+    @PatchMapping("/deactivate")
+    public ResponseEntity<Void> deactivateTeacher(@PathVariable Long studentId) {
+
+        teacherService.deactivateTeacher(studentId);
+
+        return ResponseEntity.ok().build();
+
+    }
+
+}
