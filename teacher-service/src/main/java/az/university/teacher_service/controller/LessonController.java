@@ -42,6 +42,15 @@ public class LessonController {
 //        return new  ResponseEntity<>(response, HttpStatus.OK);
 //    }
 
+    @GetMapping("/list")//bu dto da yuxaridaki response da eyni sheyi icra edir
+    // sadece dto diger servisden call olduqu uchun map ola bilsin deye vahid type edilib yeni dto
+    public ResponseEntity<List<LessonDto>> getAllLessons(){
+
+        List<LessonDto> dtos = lessonService.getAllLessons();
+
+        return new  ResponseEntity<>(dtos, HttpStatus.OK);
+    }
+
     @PatchMapping("/{lessonId}/add-lesson/{groupId}")
     public ResponseEntity<Void> addLessonToGroup(@PathVariable Long groupId, @PathVariable Long lessonId){
         lessonService.addLessonToGroup(groupId,lessonId);
@@ -49,13 +58,7 @@ public class LessonController {
 
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<List<LessonDto>> getAllLessons(){
 
-        List<LessonDto> dtos = lessonService.getAllLessons();
-
-        return new  ResponseEntity<>(dtos, HttpStatus.OK);
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<LessonSingleResponse> getLessonById(@PathVariable Long id){

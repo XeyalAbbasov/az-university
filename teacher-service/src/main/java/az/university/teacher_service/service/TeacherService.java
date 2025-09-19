@@ -89,7 +89,6 @@ public class TeacherService {
     public String markAttendance(Long teacherId, CreateAttendanceRequest request) {
 
         Teacher teacher = findTeacherById(teacherId);
-//        Lesson lesson = lessonService.findLessonById(request.getLessonId());
 
         Lesson lesson= lessonRepository.findById(request.getLessonId()).orElseThrow(()-> new LessonNotFoundException("Lesson not found"));
         attendanceClient.markAttendance(request);

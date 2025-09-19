@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  eureka-service:
+    build:
+      context: ./eureka-service
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - my-net
+
+      
+  teacher-service:
+    build:
+      context: ./teacher-service
+    container_name: teacher-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-service
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - MANAGEMENT.ZIPKIN.TRACING.ENDPOINT=http://zipkin:9411/api/v2/spans
+    networks:
+      - my-net
+      
+  student-service:
+    build:
+      context: ./student-service
+    container_name: student-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-service
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - MANAGEMENT.ZIPKIN.TRACING.ENDPOINT=http://zipkin:9411/api/v2/spans
+    networks:
+      - my-net
+  
+  attendance-service:
+    build:
+      context: ./attendance-service
+    container_name: attendance-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-service
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - MANAGEMENT.ZIPKIN.TRACING.ENDPOINT=http://zipkin:9411/api/v2/spans
+    networks:
+      - my-net
+      
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - my-net
+  
+networks:
+  my-net:
+    driver: bridge

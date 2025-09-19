@@ -18,11 +18,9 @@ public class TeacherController {
 
 
     private TeacherService teacherService;
-    private AttendanceClient attendanceClient;
 
-    public TeacherController(TeacherService teacherService,AttendanceClient attendanceClient) {
+    public TeacherController(TeacherService teacherService) {
         this.teacherService = teacherService;
-        this.attendanceClient = attendanceClient;
     }
 
 
