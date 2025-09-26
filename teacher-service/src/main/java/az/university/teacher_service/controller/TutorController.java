@@ -1,11 +1,16 @@
 package az.university.teacher_service.controller;
 
 
+import az.university.teacher_service.exception.MyException;
 import az.university.teacher_service.request.CreateTutorRequest;
 import az.university.teacher_service.response.TutorAddResponse;
 import az.university.teacher_service.service.TutorService;
+import az.university.teacher_service.util.Constans;
+import jakarta.validation.Constraint;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,10 +26,11 @@ public class TutorController {
 
 
     @PostMapping("/registration")
-    public ResponseEntity<TutorAddResponse> create(@RequestBody final CreateTutorRequest request) {
-
+    public ResponseEntity<TutorAddResponse> create(@Valid @RequestBody final CreateTutorRequest request, BindingResult br) {
+        if (br.hasErrors()) {
+            throw new MyException(Constans.VALIDATION_MESSAGE, br, Constans.VALIDATION_TYPE);
+        }
         TutorAddResponse response = tutorService.create(request);
-
         return new ResponseEntity<>(response, HttpStatus.CREATED);
 
     }

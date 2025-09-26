@@ -32,6 +32,6 @@ public class Lesson {
     private List<GradeComponent> components = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id")
+    @JoinColumn(name = "teacher_id")// istesen bunu obyekt seviyesinde deyil sadece teacher id long seviyyesinde deyishe bilersen daha sonra
     private Teacher teacher;
 }
