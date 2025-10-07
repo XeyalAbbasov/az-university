@@ -7,31 +7,30 @@ import lombok.Data;
 @Data
 public class CreateTutorRequest {
 
-    @Size(min = 2,message = "Name must be minimum with 2 letters !")
-    @Size(max = 50, message = "Name must be maximum with 50 letters !")
-    @NotBlank(message = "Name must be added into the blank! ")
+    @Size(min = 2, message = "Ad ən azı 2 hərfdən ibarət olmalıdır!")
+    @Size(max = 50, message = "Ad ən çox 50 hərfdən ibarət ola bilər!")
+    @NotBlank(message = "Ad boş buraxıla bilməz!")
     private String firstName;
 
-    @Size(min = 2,message = "Name must be minimum with 2 letters !")
-    @Size(max = 50, message = "Name must be maximum with 50 letters !")
-    @NotBlank(message = "Name must be added into the blank! ")
+    @Size(min = 2, message = "Soyad ən azı 2 hərfdən ibarət olmalıdır!")
+    @Size(max = 50, message = "Soyad ən çox 50 hərfdən ibarət ola bilər!")
+    @NotBlank(message = "Soyad boş buraxıla bilməz!")
     private String lastName;
 
-    @Size(min = 2,message = "Name must be minimum with 2 letters !")
-    @Size(max = 50, message = "Name must be maximum with 50 letters !")
-    @NotBlank(message = "Name must be added into the blank! ")
+    @Size(min = 2, message = "Ata adı ən azı 2 hərfdən ibarət olmalıdır!")
+    @Size(max = 50, message = "Ata adı ən çox 50 hərfdən ibarət ola bilər!")
+    @NotBlank(message = "Ata adı boş buraxıla bilməz!")
     private String fatherName;
 
-    @NotBlank(message = "Username must be added into the blank! ")
+    @NotBlank(message = "İstifadəçi adı boş buraxıla bilməz!")
     private String username;
 
-    @NotBlank(message = "Password must be added into the blank! ")
+    @NotBlank(message = "Şifrə boş buraxıla bilməz!")
     private String password;
 
-    @NotBlank(message = "Email must be added into the blank! ")
+    @NotBlank(message = "E-poçt ünvanı boş buraxıla bilməz!")
     private String email;
 
-    @NotBlank(message = "Email must be added into the blank! ")
+    @NotBlank(message = "Telefon nömrəsi boş buraxıla bilməz!")
     private String phone;
-
 }

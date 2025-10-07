@@ -44,7 +44,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
          return http.csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/users/authenticate").permitAll()
+                .requestMatchers("/auth/login").permitAll()
+                 .requestMatchers(request -> {
+                     String header = request.getHeader("X-Internal-Key");
+                     return header != null && header.equals("super-secret-key");
+                 }).permitAll()
                 .anyRequest()
                 .authenticated().and()
                 .sessionManagement()

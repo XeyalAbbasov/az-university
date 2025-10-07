@@ -1,0 +1,23 @@
+#spring:
+#  application:
+#    name: GATEWAY-SERVICE
+#
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: teacher-service
+#          uri: lb://TEACHER-SERVICE
+#          predicates:
+#            - Path=/academic/**
+#          filters:
+#            - JwtAuthenticationFilter
+#
+#        - id: authentication-service
+#          uri: lb://AUTHENTICATION-SERVICE
+#          predicates:
+#            - Path=/auth/**
+#
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/

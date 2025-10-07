@@ -3,8 +3,10 @@ package az.university.teacher_service.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -17,11 +19,9 @@ public class Group {
 
     private String name;  // məsələn: "Math-101"
     private String codeOfSubject;
-    private LocalDateTime createdAt;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "tutor_id",nullable = false)
-    private Tutor createdBy; // qrupun kim tərəfindən yaradıldığı
+    private LocalDate createdAt;
+    private Long createdBy;
+    private boolean active;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "group_teacher",
@@ -32,8 +32,10 @@ public class Group {
     @OneToMany(mappedBy = "group",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Lesson> lessons;
 
-    private boolean active;
 
 
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "tutor_id",nullable = false)
+//    private Tutor createdBy; // qrupun kim tərəfindən yaradıldığı
 
 }

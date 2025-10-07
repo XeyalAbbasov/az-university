@@ -15,7 +15,6 @@ import az.university.teacher_service.response.TeacherSingleResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -35,10 +34,11 @@ public class TeacherService {
         this.lessonRepository = lessonRepository;
     }
 
-    public TeacherAddResponse create(CreateTeacherRequest request) {
+    public TeacherAddResponse create(final CreateTeacherRequest request) {
 
         Teacher teacher = new Teacher();
         modelMapper.map(request, teacher);
+        String s=request.getEmail();
         teacher.setActive(true);
         teacherRepository.save(teacher);
 

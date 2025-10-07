@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface AttendanceClient {
 
     @PostMapping
-    void markAttendance(CreateAttendanceRequest request);
+    void markAttendance(final CreateAttendanceRequest request);
 
 
 }

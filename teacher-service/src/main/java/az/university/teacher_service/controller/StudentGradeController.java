@@ -3,6 +3,7 @@ package az.university.teacher_service.controller;
 import az.university.teacher_service.request.CreateStudentGradeRequest;
 import az.university.teacher_service.response.StudentGradeAddResponse;
 import az.university.teacher_service.service.StudentGradeService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,7 @@ public class StudentGradeController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createGrades(@RequestBody CreateStudentGradeRequest request){
+    public ResponseEntity<Void> createGrades(@Valid @RequestBody CreateStudentGradeRequest request){
 
         studentGradeService.createGrades(request);
 

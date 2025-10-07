@@ -1,21 +1,30 @@
 package az.university.teacher_service.service;
 
+import az.university.teacher_service.client.AuthenticationClient;
 import az.university.teacher_service.client.StudentClient;
 import az.university.teacher_service.dto.StudenDto;
+import az.university.teacher_service.dto.UserDto;
 import az.university.teacher_service.exception.GroupNotFoundException;
+import az.university.teacher_service.exception.MyException;
 import az.university.teacher_service.model.*;
 import az.university.teacher_service.repository.GroupRepository;
 import az.university.teacher_service.repository.GroupStudentRepository;
 import az.university.teacher_service.repository.TeacherRepository;
 import az.university.teacher_service.request.AddStudentToGroupRequest;
 import az.university.teacher_service.request.CreateGroupRequest;
+import az.university.teacher_service.request.UpdateGroupRequest;
 import az.university.teacher_service.response.GroupAddResponse;
 import az.university.teacher_service.response.GroupListResponse;
 import az.university.teacher_service.response.GroupSingleResponse;
+import az.university.teacher_service.util.Constants;
+import lombok.Data;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -28,10 +37,11 @@ public class GroupService {
     private TutorService tutorService;
     private TeacherService teacherService;
     private GroupStudentRepository groupStudentRepository;
+    private AuthenticationClient authenticationClient;
 
     public GroupService(GroupRepository groupRepository, ModelMapper modelMapper, TutorService tutorService,
                         TeacherService teacherService, GroupStudentRepository groupStudentRepository, StudentClient studentClient,
-                        TeacherRepository teacherRepository) {
+                        TeacherRepository teacherRepository, AuthenticationClient authenticationClient) {
         this.groupRepository = groupRepository;
         this.modelMapper = modelMapper;
         this.tutorService = tutorService;
@@ -39,24 +49,54 @@ public class GroupService {
         this.groupStudentRepository = groupStudentRepository;
         this.studentClient = studentClient;
         this.teacherRepository = teacherRepository;
+        this.authenticationClient = authenticationClient;
     }
 
 
-    public GroupAddResponse create(Long tutorId, CreateGroupRequest request) {
+    @Value("${internal.api.key}")
+    private String internalApiKey;
 
-        Tutor tutor = tutorService.findTutorById(tutorId);
+    public GroupAddResponse create(String username, CreateGroupRequest request) {
+
+        Long tutorUserId = authenticationClient.getUserIdByUsername(username,internalApiKey);
+
         Group group = new Group();
 
         modelMapper.map(request, group);
-        group.setCreatedAt(LocalDateTime.now());
-        group.setCreatedBy(tutor);
+        group.setCreatedAt(LocalDate.now());
+        group.setCreatedBy(tutorUserId);
         group.setActive(true);
         groupRepository.save(group);
+        //burada user cedvelinede melumatlari gomderki update de useri ordan yoluyub equal edeceksen
 
         GroupAddResponse response = new GroupAddResponse();
         response.setGroupId(group.getId());
         return response;
     }
+
+
+    public String update(Long id,String tutorUsername, UpdateGroupRequest request) {
+
+        Group group = findGroupById(id);
+
+        Long tutorId = authenticationClient.getUserIdByUsername(tutorUsername,internalApiKey);
+
+        Long groupOwnerId = group.getCreatedBy();
+
+        if (groupOwnerId.equals(tutorId)) {
+            group.setId(group.getId());
+            group.setName(request.getName());
+            group.setCodeOfSubject(request.getCodeOfSubject());
+            group.setCreatedAt(group.getCreatedAt());
+            group.setCreatedBy(group.getCreatedBy());
+            group.setActive(group.isActive());
+            groupRepository.save(group);
+            return "Group has been updated successfully ";
+        } else
+            throw new MyException("You must update your own group !", null, Constants.POSSESSION);
+
+    }
+
 
     public void assignTeacherToGroup(Long groupId, Long teacherId) {
         Group group = findGroupById(groupId);

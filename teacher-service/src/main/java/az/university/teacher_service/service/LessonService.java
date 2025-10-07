@@ -1,14 +1,18 @@
 package az.university.teacher_service.service;
 
+import az.university.teacher_service.client.AuthenticationClient;
 import az.university.teacher_service.dto.LessonDto;
 import az.university.teacher_service.exception.LessonNotFoundException;
+import az.university.teacher_service.exception.MyException;
 import az.university.teacher_service.model.Group;
 import az.university.teacher_service.model.Lesson;
 import az.university.teacher_service.model.Teacher;
 import az.university.teacher_service.repository.LessonRepository;
 import az.university.teacher_service.request.CreateLessonRequest;
+import az.university.teacher_service.request.UpdateLessonRequest;
 import az.university.teacher_service.response.LessonAddResponse;
 import az.university.teacher_service.response.LessonSingleResponse;
+import az.university.teacher_service.util.Constants;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +25,15 @@ public class LessonService {
     private ModelMapper modelMapper;
     private GroupService groupService;
     private TeacherService teacherService;
+    private AuthenticationClient authenticationClient;
 
-    public LessonService(LessonRepository lessonRepository, ModelMapper modelMapper,GroupService groupService,
-                         TeacherService teacherService) {
+    public LessonService(LessonRepository lessonRepository, ModelMapper modelMapper, GroupService groupService,
+                         TeacherService teacherService, AuthenticationClient authenticationClient) {
         this.lessonRepository = lessonRepository;
         this.modelMapper = modelMapper;
         this.groupService = groupService;
         this.teacherService = teacherService;
+        this.authenticationClient = authenticationClient;
 
     }
 
@@ -53,9 +59,9 @@ public class LessonService {
 //        response.setLessonId(lesson.getId());
 //        return response;
 //    }
-    public LessonAddResponse create(CreateLessonRequest request) {
+    public LessonAddResponse create(final CreateLessonRequest request) {
 
-        Teacher teacher=teacherService.findTeacherById(request.getTeacherId());
+        Teacher teacher = teacherService.findTeacherById(request.getTeacherId());
 
         Lesson lesson = new Lesson();
 
@@ -72,6 +78,25 @@ public class LessonService {
         response.setLessonId(lesson.getId());
         return response;
     }
+
+
+    public String update(Long lessonId, String username, final UpdateLessonRequest request) {
+
+        Lesson lesson = findLessonById(lessonId);
+        String lessonOwnerUsername = lesson.getTeacher().getUsername();
+
+        if (!username.equals(lessonOwnerUsername)) {
+            throw new MyException("You must update your own lesson !", null, Constants.POSSESSION);
+        } else {
+            modelMapper.map(request, lesson);
+            lesson.setGroup(lesson.getGroup());
+            lesson.setTeacher(lesson.getTeacher());
+
+            lessonRepository.save(lesson);
+            return "Lesson has been updated successfully";
+        }
+    }
+
 
     public void addLessonToGroup(Long groupId, Long lessonId) {
 

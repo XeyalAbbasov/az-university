@@ -9,12 +9,11 @@ public class MyException extends RuntimeException {
     private String type;
     private BindingResult br;
 
-    public MyException(String message,BindingResult br,  String type) {
+    public MyException(String message, BindingResult br, String type) {
 
         super(message);
         this.br = br;
         this.type = type;
-
 
     }
 

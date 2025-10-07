@@ -1,12 +1,17 @@
 package az.university.teacher_service.controller;
 
 import az.university.teacher_service.dto.LessonDto;
+import az.university.teacher_service.exception.MyException;
 import az.university.teacher_service.request.CreateLessonRequest;
+import az.university.teacher_service.request.UpdateLessonRequest;
 import az.university.teacher_service.response.LessonAddResponse;
 import az.university.teacher_service.response.LessonSingleResponse;
 import az.university.teacher_service.service.LessonService;
+import az.university.teacher_service.util.Constants;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,11 +33,28 @@ public class LessonController {
 //        return new ResponseEntity<>(response, HttpStatus.CREATED);
 //    }
     @PostMapping
-    public ResponseEntity<LessonAddResponse> create(@RequestBody CreateLessonRequest request){
+    public ResponseEntity<LessonAddResponse> create(@Valid @RequestBody CreateLessonRequest request, BindingResult br){
+
+        if(br.hasErrors()){
+
+            throw new MyException(Constants.VALIDATION_MESSAGE,br, Constants.VALIDATION_TYPE);
+        }
 
         LessonAddResponse response=lessonService.create(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+
+    @PutMapping("/{lessonId}")
+    public ResponseEntity<String> update(@PathVariable Long lessonId,@RequestHeader("X-USER-USERNAME") String username, @Valid @RequestBody UpdateLessonRequest request, BindingResult br){
+        if(br.hasErrors()){
+            throw new MyException(Constants.VALIDATION_MESSAGE,br, Constants.VALIDATION_TYPE);
+        }
+        String status=lessonService.update(lessonId,username,request);
+        return new ResponseEntity<>(status, HttpStatus.CREATED);
+    }
+
+
 
 //    @GetMapping("/list")
 //    public ResponseEntity<LessonListResponse> getAllLessons(){

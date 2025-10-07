@@ -45,7 +45,6 @@ public class StudentGradeService {
 
     }
 
-
     protected StudentGrade findStudentGradeById(Long id) {
 
         return studentGradeRepository.findById(id).orElseThrow(() -> new StudentGradeNotFoundException("Student's grade could not be found by following ! " + id));

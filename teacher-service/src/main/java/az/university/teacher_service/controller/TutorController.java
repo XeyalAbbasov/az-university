@@ -5,8 +5,7 @@ import az.university.teacher_service.exception.MyException;
 import az.university.teacher_service.request.CreateTutorRequest;
 import az.university.teacher_service.response.TutorAddResponse;
 import az.university.teacher_service.service.TutorService;
-import az.university.teacher_service.util.Constans;
-import jakarta.validation.Constraint;
+import az.university.teacher_service.util.Constants;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +25,10 @@ public class TutorController {
 
 
     @PostMapping("/registration")
+//    @PreAuthorize("hasRole('ROLE_ADD_TUTOR')")
     public ResponseEntity<TutorAddResponse> create(@Valid @RequestBody final CreateTutorRequest request, BindingResult br) {
         if (br.hasErrors()) {
-            throw new MyException(Constans.VALIDATION_MESSAGE, br, Constans.VALIDATION_TYPE);
+            throw new MyException(Constants.VALIDATION_MESSAGE, br, Constants.VALIDATION_TYPE);
         }
         TutorAddResponse response = tutorService.create(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

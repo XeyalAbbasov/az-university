@@ -21,7 +21,7 @@ public class AttendanceController {
 
 
     @PostMapping
-    public ResponseEntity<Void> createAttendance(@RequestBody CreateAttendanceRequest request){
+    public ResponseEntity<Void> createAttendance(@RequestBody final CreateAttendanceRequest request){
 
          attendanceService.markAttendance(request);
 
