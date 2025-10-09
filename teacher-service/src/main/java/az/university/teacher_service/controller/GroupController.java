@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -32,43 +33,72 @@ public class GroupController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<GroupAddResponse> create(@RequestHeader("X-USER-USERNAME") String tutorUsername, @Valid @RequestBody CreateGroupRequest request, BindingResult br) {
+    public ResponseEntity<GroupAddResponse> create(@RequestHeader("X-USER-USERNAME") String tutorUsername,
+                                                   @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader,
+                                                   @Valid @RequestBody CreateGroupRequest request,
+                                                   BindingResult br) {
 
         if (br.hasErrors()) {
-            throw new MyException(Constants.VALIDATION_MESSAGE,br, Constants.VALIDATION_TYPE);
+            throw new MyException(Constants.VALIDATION_MESSAGE, br, Constants.VALIDATION_TYPE);
         }
-            GroupAddResponse response = groupService.create(tutorUsername, request);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+        List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
+        if (!roles.contains("ROLE_ADD_GROUP")) {
+            throw new MyException("Sizin qrup yaratmaq hüququnuz yoxdur ! ", null, Constants.POSSESSION);
+        }
+
+        GroupAddResponse response = groupService.create(tutorUsername, request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
 
     }
 
     @PutMapping("/{groupId}")
-    public ResponseEntity<String> update(@PathVariable Long groupId , @RequestHeader("X-USER-USERNAME") String tutorUsername, @Valid @RequestBody UpdateGroupRequest request, BindingResult br) {
+    public ResponseEntity<String> update(@PathVariable Long groupId,
+                                         @RequestHeader("X-USER-USERNAME") String tutorUsername,
+                                         @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader,
+                                         @Valid @RequestBody UpdateGroupRequest request, BindingResult br) {
 
         if (br.hasErrors()) {
-            throw new MyException(Constants.VALIDATION_MESSAGE,br, Constants.VALIDATION_TYPE);
+            throw new MyException(Constants.VALIDATION_MESSAGE, br, Constants.VALIDATION_TYPE);
         }
-        String status = groupService.update(groupId,tutorUsername, request);
+
+        List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
+        if (!roles.contains("ROLE_UPDATE_GROUP")) {
+            throw new MyException("Sizin qrup yeniləmə hüququnuz yoxdur ! ", null, Constants.POSSESSION);
+        }
+        String status = groupService.update(groupId, tutorUsername, request);
         return new ResponseEntity<>(status, HttpStatus.CREATED);
 
     }
 
 
-
     @PatchMapping("/{groupId}/assign-teacher/{teacherId}")
     public ResponseEntity<Void> assignTeacherToGroup(
             @PathVariable Long groupId,
-            @PathVariable Long teacherId) {
+            @PathVariable Long teacherId,
+            @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
+
+        List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
+        if (!roles.contains("ROLE_ADDING")) {
+            throw new MyException("Sizin qrupa müəllim əlavə etmək hüququnuz yoxdur ! ", null, Constants.POSSESSION);
+        }
 
         groupService.assignTeacherToGroup(groupId, teacherId);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{groupId}/add-students")
-    ResponseEntity<Void> assignStudentToGroup( @PathVariable Long groupId,
-                                               @Valid @RequestBody AddStudentToGroupRequest request,BindingResult br) {
+    ResponseEntity<Void> assignStudentToGroup(@PathVariable Long groupId,
+                                              @Valid @RequestBody AddStudentToGroupRequest request,
+                                              @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader,
+                                              BindingResult br) {
         if (br.hasErrors()) {
-            throw new MyException(Constants.VALIDATION_MESSAGE,br, Constants.VALIDATION_TYPE);
+            throw new MyException(Constants.VALIDATION_MESSAGE, br, Constants.VALIDATION_TYPE);
+        }
+
+        List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
+        if (!roles.contains("ROLE_ADDING")) {
+            throw new MyException("Sizin qrupa tələbə əlavə etmək hüququnuz yoxdur ! ", null, Constants.POSSESSION);
         }
         groupService.assignStudentToGroup(groupId, request);
         return ResponseEntity.ok().build();
@@ -76,23 +106,38 @@ public class GroupController {
 
 
     @GetMapping("/{groupId}/students")
-    public ResponseEntity<List<StudenDto>> getStudentsByGroupId(@PathVariable Long groupId) {
+    public ResponseEntity<List<StudenDto>> getStudentsByGroupId(@PathVariable Long groupId,
+                                                                @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
+
+        List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
+        if (!roles.contains("ROLE_GET_STUDENTS")) {
+            throw new MyException("Sizin tələbə siyahısını görmək hüququnuz yoxdur ! ", null, Constants.POSSESSION);
+        }
+
         List<StudenDto> students = groupService.getStudentsByGroupId(groupId);
         return ResponseEntity.ok(students);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<GroupListResponse> getAllGroups() {
+    public ResponseEntity<GroupListResponse> getAllGroups(@RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
 
+        List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
+        if (!roles.contains("ROLE_GET_STUDENTS")) {
+            throw new MyException("Sizin tələbə siyahısını görmək hüququnuz yoxdur! ", null, Constants.POSSESSION);
+        }
         GroupListResponse entities = groupService.getAllGroups();
 
         return new ResponseEntity<>(entities, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GroupSingleResponse> getLessonById(@PathVariable Long id) {
-
-        GroupSingleResponse response = groupService.getLessonById(id);
+    public ResponseEntity<GroupSingleResponse> getGroupById(@PathVariable Long id,
+                                                             @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
+        List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
+        if (!roles.contains("ROLE_GET_STUDENTS")) {
+            throw new MyException("Sizin tələbə siyahısını görmək hüququnuz yoxdur! ", null, Constants.POSSESSION);
+        }
+        GroupSingleResponse response = groupService.getGroupById(id);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -3,7 +3,6 @@ package az.university.teacher_service.service;
 import az.university.teacher_service.client.AuthenticationClient;
 import az.university.teacher_service.client.StudentClient;
 import az.university.teacher_service.dto.StudenDto;
-import az.university.teacher_service.dto.UserDto;
 import az.university.teacher_service.exception.GroupNotFoundException;
 import az.university.teacher_service.exception.MyException;
 import az.university.teacher_service.model.*;
@@ -17,14 +16,11 @@ import az.university.teacher_service.response.GroupAddResponse;
 import az.university.teacher_service.response.GroupListResponse;
 import az.university.teacher_service.response.GroupSingleResponse;
 import az.university.teacher_service.util.Constants;
-import lombok.Data;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -147,7 +143,7 @@ public class GroupService {
 
     }
 
-    public GroupSingleResponse getLessonById(Long groupId) {
+    public GroupSingleResponse getGroupById(Long groupId) {
 
         Group group = findGroupById(groupId);
 

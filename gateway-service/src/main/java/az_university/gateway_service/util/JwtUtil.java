@@ -1,11 +1,13 @@
 package az_university.gateway_service.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.List;
 
 @Component
 public class JwtUtil {
@@ -23,12 +25,35 @@ public class JwtUtil {
     }
 
     public String extractUsername(String token) {
+
+        return extractAllClaims(token).getSubject();
+    }
+
+
+    public List<String>  extractRoles(String token){
+
+        Claims claims = extractAllClaims(token);
+
+        Object roles = claims.get("roles");
+
+        if (roles instanceof List<?> list){
+
+            return list.stream()
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .toList();
+        }
+    return List.of();
+
+    }
+
+
+    public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignKey())
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 
 }

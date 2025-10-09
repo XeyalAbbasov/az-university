@@ -22,19 +22,13 @@ values ('admin', '$2a$12$ZqnYwYvFVlWafNnQ/Z5JgOTmG6LhmtqXOUkTQ/4i6cgNGBDXK/iVq',
 
 INSERT INTO user_roles (user_id, role_id)
 VALUES (1, 1),
-       (1,2);
+       (1,2),
+       (1, 3),
+       (1, 4),
+       (1, 5),
+       (1, 6),
+       (1, 7);
 
 INSERT INTO user_roles (user_id, role_id)
-VALUES (2, 2);
+VALUES (2, 7);
 
-
-
--- insert into user_roles (user_id, role_id)
--- select 1, id
--- from roles
--- where seller = 1;
---
--- insert into user_roles (user_id, role_id)
--- select 2, id
--- from roles
--- where seller = 1;

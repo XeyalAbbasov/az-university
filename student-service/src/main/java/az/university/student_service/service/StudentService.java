@@ -27,6 +27,19 @@ public class StudentService {
         this.modelMapper = modelMapper;
     }
 
+    public StudentAddResponse create(CreateStudentRequest request) {
+
+        Student student = new Student();
+        modelMapper.map(request, student);
+        student.setActive(true);
+        studentRepository.save(student);
+
+        StudentAddResponse response = new StudentAddResponse();
+        response.setStudentId(student.getId());
+
+        return response;
+    }
+
     public StudentListResponse getAllStudents() {
 
         List<Student> list = studentRepository.findAll();
@@ -60,24 +73,19 @@ public class StudentService {
 
         Student student = findStudentById(id);
 
-        StudentIdDto dto =new  StudentIdDto();
+        StudentIdDto dto = new StudentIdDto();
         dto.setStudentId(student.getId());
 
         return dto;
 
     }
 
-    public StudentAddResponse create(CreateStudentRequest request) {
+    public List<StudentDto> getStudentByIds(List<Long> studentIds) {
 
-        Student student = new Student();
-        modelMapper.map(request, student);
-        student.setActive(true);
-        studentRepository.save(student);
+        List<Student> students = studentRepository.findAllById(studentIds);
 
-        StudentAddResponse response = new StudentAddResponse();
-        response.setStudentId(student.getId());
+        return students.stream().map(student -> modelMapper.map(student, StudentDto.class)).toList();
 
-        return response;
     }
 
     public void activateStudent(Long studentId) {
@@ -94,13 +102,8 @@ public class StudentService {
         studentRepository.save(student);
     }
 
-    public List<StudentDto> getStudentByIds(List<Long> studentIds) {
 
-        List<Student> students = studentRepository.findAllById(studentIds);
 
-        return students.stream().map(student -> modelMapper.map(student, StudentDto.class)).toList();
-
-    }
 
     public Boolean doesStudentExist(Long studentId) {
 

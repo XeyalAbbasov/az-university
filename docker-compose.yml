@@ -9,7 +9,20 @@ services:
       - "8761:8761"
     networks:
       - my-net
-
+      
+  authentication-service:
+    build:
+      context: ./authentication-service
+    container_name: authentication-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-service
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - MANAGEMENT.ZIPKIN.TRACING.ENDPOINT=http://zipkin:9411/api/v2/spans
+    networks:
+      - my-net
       
   teacher-service:
     build:
@@ -52,6 +65,20 @@ services:
       - MANAGEMENT.ZIPKIN.TRACING.ENDPOINT=http://zipkin:9411/api/v2/spans
     networks:
       - my-net
+      
+  gateway-service:
+    build:
+      context: ./gateway-service
+    container_name: gateway-service
+    ports:
+      - "8888:8888"
+    depends_on:
+      - eureka-service
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - MANAGEMENT.ZIPKIN.TRACING.ENDPOINT=http://zipkin:9411/api/v2/spans
+    networks:
+      - my-net  
       
   zipkin:
     image: openzipkin/zipkin
