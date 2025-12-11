@@ -21,6 +21,7 @@ public class Teacher {
     private String firstName;
     private String lastName;
     private String fatherName;
+    //burada username password lazim deyil chunki user repoda onlar var gelecekde siline biler
     private String username;
     private String password;
     private String email;
@@ -30,6 +31,4 @@ public class Teacher {
     @ManyToMany(mappedBy = "teachers",fetch = FetchType.LAZY)
     private List<Group> groups=new ArrayList<>();
 
-    @OneToMany(mappedBy = "teacher")
-    private List<Lesson>  lessons=new ArrayList<>();
 }

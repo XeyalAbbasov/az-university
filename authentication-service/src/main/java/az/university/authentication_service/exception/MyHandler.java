@@ -1,7 +1,7 @@
-package az.university.teacher_service.exception;
+package az.university.authentication_service.exception;
 
-import az.university.teacher_service.response.ErrorResponse;
-import az.university.teacher_service.response.MyFieldError;
+import az.university.authentication_service.response.ErrorResponse;
+import az.university.authentication_service.response.MyFieldError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -38,35 +38,5 @@ public class MyHandler {
         errorResponse.setType(e.getType());
         return errorResponse;
 
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<?> teacherNotFoundException(GroupNotFoundException e) {
-
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<?> teacherNotFoundException(LessonNotFoundException e) {
-
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<?> teacherNotFoundException(TeacherNotFoundException e) {
-
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<?> tutorNotFoundException(TutorNotFoundException e) {
-
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<?> gradeNotFoundException(GradeComponentNotFoundException e) {
-
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

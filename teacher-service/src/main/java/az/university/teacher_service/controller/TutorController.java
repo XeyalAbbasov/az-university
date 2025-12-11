@@ -12,11 +12,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 @RestController
 @RequestMapping("/tutors")
 public class TutorController {
 
-
+    //update tutor yoxdur
     private TutorService tutorService;
 
     public TutorController(TutorService tutorService) {
@@ -25,18 +28,31 @@ public class TutorController {
 
 
     @PostMapping("/registration")
-//    @PreAuthorize("hasRole('ROLE_ADD_TUTOR')")
-    public ResponseEntity<TutorAddResponse> create(@Valid @RequestBody final CreateTutorRequest request, BindingResult br) {
+    public ResponseEntity<TutorAddResponse> create(@Valid @RequestBody final CreateTutorRequest request,
+                                                   @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader,
+                                                   BindingResult br) {
         if (br.hasErrors()) {
             throw new MyException(Constants.VALIDATION_MESSAGE, br, Constants.VALIDATION_TYPE);
         }
+
+        List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
+        if (!roles.contains("ROLE_CONTROL_TUTOR")) {
+            throw new MyException("Sizin tələbə siyahısını görmək hüququnuz yoxdur! ", null, Constants.POSSESSION);
+        }
+
         TutorAddResponse response = tutorService.create(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
 
     }
 
     @PatchMapping("/activate/{id}")
-    public ResponseEntity<Void> activateTutor(@PathVariable Long id) {
+    public ResponseEntity<Void> activateTutor(@PathVariable Long id,
+                                              @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
+
+        List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
+        if (!roles.contains("ROLE_CONTROL_TUTOR")) {
+            throw new MyException("Sizin tələbə siyahısını görmək hüququnuz yoxdur! ", null, Constants.POSSESSION);
+        }
 
         tutorService.activateTutor(id);
 
@@ -45,7 +61,13 @@ public class TutorController {
     }
 
     @PatchMapping("/deactivate/{id}")
-    public ResponseEntity<Void> deactivateTutor(@PathVariable Long id) {
+    public ResponseEntity<Void> deactivateTutor(@PathVariable Long id,
+                                                @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
+
+        List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
+        if (!roles.contains("ROLE_CONTROL_TUTOR")) {
+            throw new MyException("Sizin tələbə siyahısını görmək hüququnuz yoxdur! ", null, Constants.POSSESSION);
+        }
 
         tutorService.deactivateTutor(id);
 

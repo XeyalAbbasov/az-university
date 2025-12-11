@@ -28,7 +28,7 @@ public class StudentGradeService {
 
         boolean doesStudentExist = studentClient.existsById(request.getStudentId());
         if (!doesStudentExist) {
-            throw new RuntimeException("Student with id " + request.getStudentId() + " does not exist");
+            throw new RuntimeException("Tələbə bu identifikasiya ilə " + request.getStudentId() + " mövcud deyil");
 
         } else if (request.getGrade() > comp.getMaxValue())
 

@@ -1,5 +1,6 @@
 package az.university.student_service.service;
 
+import az.university.student_service.client.AuthenticationClient;
 import az.university.student_service.dto.StudentDto;
 import az.university.student_service.dto.StudentIdDto;
 import az.university.student_service.exception.StudentNotFoundException;
@@ -10,6 +11,7 @@ import az.university.student_service.response.StudentAddResponse;
 import az.university.student_service.response.StudentListResponse;
 import az.university.student_service.response.StudentSingleResponse;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,20 +21,30 @@ import java.util.List;
 public class StudentService {
 
 
+    private final AuthenticationClient authenticationClient;
     private StudentRepository studentRepository;
     private ModelMapper modelMapper;
 
-    public StudentService(StudentRepository studentRepository, ModelMapper modelMapper) {
+    public StudentService(StudentRepository studentRepository, ModelMapper modelMapper, AuthenticationClient authenticationClient) {
         this.studentRepository = studentRepository;
         this.modelMapper = modelMapper;
+        this.authenticationClient = authenticationClient;
     }
 
-    public StudentAddResponse create(CreateStudentRequest request) {
+
+    @Value("${internal.api.key}")
+    private String internalApiKey;
+
+
+    public StudentAddResponse create(final CreateStudentRequest request) {
 
         Student student = new Student();
         modelMapper.map(request, student);
         student.setActive(true);
         studentRepository.save(student);
+
+
+        authenticationClient.sendTeacherToAuth(student.getId(),request,internalApiKey,"ROLE_CONTROL_STUDENT");
 
         StudentAddResponse response = new StudentAddResponse();
         response.setStudentId(student.getId());

@@ -43,7 +43,7 @@ public class GroupController {
         }
 
         List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
-        if (!roles.contains("ROLE_ADD_GROUP")) {
+        if (!roles.contains("ROLE_CONTROL_GROUP")) {
             throw new MyException("Sizin qrup yaratmaq hüququnuz yoxdur ! ", null, Constants.POSSESSION);
         }
 
@@ -63,7 +63,7 @@ public class GroupController {
         }
 
         List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
-        if (!roles.contains("ROLE_UPDATE_GROUP")) {
+        if (!roles.contains("ROLE_CONTROL_GROUP")) {
             throw new MyException("Sizin qrup yeniləmə hüququnuz yoxdur ! ", null, Constants.POSSESSION);
         }
         String status = groupService.update(groupId, tutorUsername, request);
@@ -79,7 +79,7 @@ public class GroupController {
             @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
 
         List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
-        if (!roles.contains("ROLE_ADDING")) {
+        if (!roles.contains("ROLE_CONTROL_GROUP")) {
             throw new MyException("Sizin qrupa müəllim əlavə etmək hüququnuz yoxdur ! ", null, Constants.POSSESSION);
         }
 
@@ -87,7 +87,7 @@ public class GroupController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{groupId}/add-students")
+    @PatchMapping("/{groupId}/assign-students")
     ResponseEntity<Void> assignStudentToGroup(@PathVariable Long groupId,
                                               @Valid @RequestBody AddStudentToGroupRequest request,
                                               @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader,
@@ -97,7 +97,7 @@ public class GroupController {
         }
 
         List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
-        if (!roles.contains("ROLE_ADDING")) {
+        if (!roles.contains("ROLE_CONTROL_GROUP")) {
             throw new MyException("Sizin qrupa tələbə əlavə etmək hüququnuz yoxdur ! ", null, Constants.POSSESSION);
         }
         groupService.assignStudentToGroup(groupId, request);
@@ -110,7 +110,7 @@ public class GroupController {
                                                                 @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
 
         List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
-        if (!roles.contains("ROLE_GET_STUDENTS")) {
+        if (!roles.contains("ROLE_CONTROL_GROUP")) {
             throw new MyException("Sizin tələbə siyahısını görmək hüququnuz yoxdur ! ", null, Constants.POSSESSION);
         }
 
@@ -122,7 +122,7 @@ public class GroupController {
     public ResponseEntity<GroupListResponse> getAllGroups(@RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
 
         List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
-        if (!roles.contains("ROLE_GET_STUDENTS")) {
+        if (!roles.contains("ROLE_CONTROL_GROUP")) {
             throw new MyException("Sizin tələbə siyahısını görmək hüququnuz yoxdur! ", null, Constants.POSSESSION);
         }
         GroupListResponse entities = groupService.getAllGroups();
@@ -134,7 +134,7 @@ public class GroupController {
     public ResponseEntity<GroupSingleResponse> getGroupById(@PathVariable Long id,
                                                              @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
         List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
-        if (!roles.contains("ROLE_GET_STUDENTS")) {
+        if (!roles.contains("ROLE_CONTROL_GROUP")) {
             throw new MyException("Sizin tələbə siyahısını görmək hüququnuz yoxdur! ", null, Constants.POSSESSION);
         }
         GroupSingleResponse response = groupService.getGroupById(id);

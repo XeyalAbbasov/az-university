@@ -1,16 +1,11 @@
 INSERT INTO roles (name, academic,teacher,student)
-VALUES ('ROLE_ADD_TUTOR', 1,0,0 ),
-       ('ROLE_ADD_TEACHER', 1,0,0),
-       ('ROLE_ADD_GROUP', 1, 0, 0),
-       ('ROLE_ADD_STUDENT', 1, 0, 0),
-       ('ROLE_ADD_LESSON', 1, 0, 0),
-       ('ROLE_ADD_COMPONENT', 1, 1, 0),
-       ('ROLE_ADD_GRADE', 1, 1, 0),
-       ('ROLE_ADD_MARK', 1, 1, 0),
-       ('ROLE_UPDATE_GROUP', 1, 1, 0),
-       ('ROLE_UPDATE_STUDENT', 1, 1, 0),
-       ('ROLE_UPDATE_LESSON', 1, 1, 0),
-       ('ROLE_UPDATE_COMPONENT', 1, 1, 0),
+VALUES ('ROLE_CONTROL_GROUP', 1,0,0 ),
+       ('ROLE_CONTROL_LESSON', 1,0,0),
+       ('ROLE_CONTROL_REQUEST',1,0,0),
+       ('ROLE_CONTROL_TEACHER', 1, 0, 0),
+       ('ROLE_CONTROL_TUTOR',1,0,0),
+       ('ROLE_CONTROL_STUDENT', 1, 1, 0),
+       ('ROLE_FOR_STUDENT',1, 1, 1),
        ('ROLE_UPDATE_TEACHER', 1, 1, 0);
 
 
@@ -27,8 +22,13 @@ VALUES (1, 1),
        (1, 4),
        (1, 5),
        (1, 6),
-       (1, 7);
+       (1, 7),
+       (1, 8);
 
 INSERT INTO user_roles (user_id, role_id)
 VALUES (2, 7);
 
+-- insert into authorities (username, authority)
+-- select 'xeyal777', authority
+-- from authority_list
+-- where librarian = 1;

@@ -1,7 +1,6 @@
 package az.university.teacher_service.request;
 
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.List;

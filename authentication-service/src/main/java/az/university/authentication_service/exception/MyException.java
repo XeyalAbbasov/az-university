@@ -1,4 +1,4 @@
-package az.university.teacher_service.exception;
+package az.university.authentication_service.exception;
 
 import lombok.Data;
 import org.springframework.validation.BindingResult;
@@ -16,4 +16,5 @@ public class MyException extends RuntimeException {
         this.type = type;
 
     }
+
 }

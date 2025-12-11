@@ -10,8 +10,10 @@ import az.university.student_service.response.StudentListResponse;
 import az.university.student_service.response.StudentSingleResponse;
 import az.university.student_service.service.StudentService;
 import az.university.student_service.util.Constants;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -29,11 +31,17 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<StudentAddResponse> create(@RequestBody final CreateStudentRequest request,
-                                                     @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
+    public ResponseEntity<StudentAddResponse> create(@Valid @RequestBody final CreateStudentRequest request,
+                                                     @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader,
+                                                     BindingResult br) {
+
+        if (br.hasErrors()) {
+            throw new MyException(Constants.VALIDATION_MESSAGE,br,Constants.POSSESSION);
+        }
+        System.out.println("rolesHeader = '" + rolesHeader + "'");
 
         List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
-        if (!roles.contains("ROLE_ADD_STUDENT")) {
+        if (!roles.contains("ROLE_CONTROL_STUDENT")) {
             throw new MyException("Sizin tələbə qeydiyyatı etmək hüququnuz yoxdur! ", null, Constants.POSSESSION);
         }
         StudentAddResponse response = studentService.create(request);

@@ -1,6 +1,7 @@
 package az.university.teacher_service.service;
 
 import az.university.teacher_service.client.AttendanceClient;
+import az.university.teacher_service.client.AuthenticationClient;
 import az.university.teacher_service.exception.LessonNotFoundException;
 import az.university.teacher_service.exception.TeacherNotFoundException;
 import az.university.teacher_service.model.Lesson;
@@ -9,10 +10,12 @@ import az.university.teacher_service.repository.LessonRepository;
 import az.university.teacher_service.repository.TeacherRepository;
 import az.university.teacher_service.request.CreateAttendanceRequest;
 import az.university.teacher_service.request.CreateTeacherRequest;
+import az.university.teacher_service.request.UpdateTeacherRequest;
 import az.university.teacher_service.response.TeacherAddResponse;
 import az.university.teacher_service.response.TeacherListResponse;
 import az.university.teacher_service.response.TeacherSingleResponse;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,27 +28,54 @@ public class TeacherService {
     private TeacherRepository teacherRepository;
     private ModelMapper modelMapper;
     private AttendanceClient attendanceClient;
+    private AuthenticationClient authenticationClient;
 
 
-    public TeacherService(TeacherRepository teacherRepository, ModelMapper modelMapper, AttendanceClient attendanceClient , LessonRepository lessonRepository) {
+    public TeacherService(TeacherRepository teacherRepository, ModelMapper modelMapper,
+                          AttendanceClient attendanceClient, LessonRepository lessonRepository,
+                          AuthenticationClient authenticationClient) {
         this.teacherRepository = teacherRepository;
         this.modelMapper = modelMapper;
         this.attendanceClient = attendanceClient;
         this.lessonRepository = lessonRepository;
+        this.authenticationClient = authenticationClient;
     }
+
+    @Value("${internal.api.key}")
+    private String internalApiKey;
 
     public TeacherAddResponse create(final CreateTeacherRequest request) {
 
         Teacher teacher = new Teacher();
         modelMapper.map(request, teacher);
-        String s=request.getEmail();
         teacher.setActive(true);
         teacherRepository.save(teacher);
+
+        authenticationClient.sendTeacherToAuth(teacher.getId(), request, internalApiKey, "ROLE_CONTROL_TEACHER");
 
         TeacherAddResponse response = new TeacherAddResponse();
         response.setTeacherId(teacher.getId());
 
         return response;
+    }
+
+    //Ishlemesini yoxla
+    public String update(Long teacherId,final UpdateTeacherRequest request) {
+
+        Teacher teacher = findTeacherById(teacherId);
+
+        teacher.setFirstName(request.getFirstName());
+        teacher.setLastName(request.getLastName());
+        teacher.setFatherName(request.getFatherName());
+        teacher.setEmail(request.getEmail());
+        teacher.setPhone(request.getPhone());
+
+        teacherRepository.save(teacher);
+
+        TeacherAddResponse response = new TeacherAddResponse();
+        response.setTeacherId(teacher.getId());
+
+        return "Group has been updated successfully ";
     }
 
     public TeacherListResponse getAllTeachers() {
@@ -90,7 +120,7 @@ public class TeacherService {
 
         Teacher teacher = findTeacherById(teacherId);
 
-        Lesson lesson= lessonRepository.findById(request.getLessonId()).orElseThrow(()-> new LessonNotFoundException("Lesson not found"));
+        Lesson lesson = lessonRepository.findById(request.getLessonId()).orElseThrow(() -> new LessonNotFoundException("Lesson not found"));
         attendanceClient.markAttendance(request);
         return "mark attendance successfully";
 
@@ -100,6 +130,11 @@ public class TeacherService {
 
         return teacherRepository.findById(id).orElseThrow(() -> new TeacherNotFoundException("Teacher could not be found by following ! " + id));
     }
+
+    protected boolean checkUsernameExists(String username){
+
+    }
+
 
 
 }

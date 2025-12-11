@@ -1,7 +1,6 @@
 package az.university.teacher_service.controller;
 
 import az.university.teacher_service.request.CreateStudentGradeRequest;
-import az.university.teacher_service.response.StudentGradeAddResponse;
 import az.university.teacher_service.service.StudentGradeService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

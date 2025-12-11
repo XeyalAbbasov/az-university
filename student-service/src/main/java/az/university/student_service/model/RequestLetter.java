@@ -27,5 +27,7 @@ public class RequestLetter {
     private LocalDateTime createdAt;
     private LocalDateTime answeredAt;
 
+    private Long studentId;
+
 
 }

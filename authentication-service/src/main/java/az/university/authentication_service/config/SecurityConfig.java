@@ -43,12 +43,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
          return http.csrf().disable()
+                 .headers(headers -> headers.frameOptions(frame->frame.disable()))
                 .authorizeHttpRequests()
                 .requestMatchers("/auth/login").permitAll()
                  .requestMatchers(request -> {
                      String header = request.getHeader("X-Internal-Key");
                      return header != null && header.equals("super-secret-key");
                  }).permitAll()
+                 .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest()
                 .authenticated().and()
                 .sessionManagement()

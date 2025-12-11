@@ -30,17 +30,15 @@ public class GroupService {
     private final TeacherRepository teacherRepository;
     private GroupRepository groupRepository;
     private ModelMapper modelMapper;
-    private TutorService tutorService;
     private TeacherService teacherService;
     private GroupStudentRepository groupStudentRepository;
     private AuthenticationClient authenticationClient;
 
-    public GroupService(GroupRepository groupRepository, ModelMapper modelMapper, TutorService tutorService,
+    public GroupService(GroupRepository groupRepository, ModelMapper modelMapper,
                         TeacherService teacherService, GroupStudentRepository groupStudentRepository, StudentClient studentClient,
                         TeacherRepository teacherRepository, AuthenticationClient authenticationClient) {
         this.groupRepository = groupRepository;
         this.modelMapper = modelMapper;
-        this.tutorService = tutorService;
         this.teacherService = teacherService;
         this.groupStudentRepository = groupStudentRepository;
         this.studentClient = studentClient;
@@ -63,7 +61,6 @@ public class GroupService {
         group.setCreatedBy(tutorUserId);
         group.setActive(true);
         groupRepository.save(group);
-        //burada user cedvelinede melumatlari gomderki update de useri ordan yoluyub equal edeceksen
 
         GroupAddResponse response = new GroupAddResponse();
         response.setGroupId(group.getId());
@@ -80,7 +77,6 @@ public class GroupService {
         Long groupOwnerId = group.getCreatedBy();
 
         if (groupOwnerId.equals(tutorId)) {
-            group.setId(group.getId());
             group.setName(request.getName());
             group.setCodeOfSubject(request.getCodeOfSubject());
             group.setCreatedAt(group.getCreatedAt());
@@ -92,7 +88,6 @@ public class GroupService {
             throw new MyException("You must update your own group !", null, Constants.POSSESSION);
 
     }
-
 
     public void assignTeacherToGroup(Long groupId, Long teacherId) {
         Group group = findGroupById(groupId);
