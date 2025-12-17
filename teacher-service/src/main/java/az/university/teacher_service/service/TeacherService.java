@@ -14,6 +14,7 @@ import az.university.teacher_service.request.UpdateTeacherRequest;
 import az.university.teacher_service.response.TeacherAddResponse;
 import az.university.teacher_service.response.TeacherListResponse;
 import az.university.teacher_service.response.TeacherSingleResponse;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -44,13 +45,14 @@ public class TeacherService {
     @Value("${internal.api.key}")
     private String internalApiKey;
 
+    @Transactional//error bash verse diger servise yarimciq melumat dushmesin deye etdik.
     public TeacherAddResponse create(final CreateTeacherRequest request) {
 
         Teacher teacher = new Teacher();
         modelMapper.map(request, teacher);
         teacher.setActive(true);
         teacherRepository.save(teacher);
-
+        //bashqa user qeydiyyatinda da bunu nezere almaq lazimdir
         authenticationClient.sendTeacherToAuth(teacher.getId(), request, internalApiKey, "ROLE_CONTROL_TEACHER");
 
         TeacherAddResponse response = new TeacherAddResponse();
@@ -60,7 +62,7 @@ public class TeacherService {
     }
 
     //Ishlemesini yoxla
-    public String update(Long teacherId,final UpdateTeacherRequest request) {
+    public String update(Long teacherId, final UpdateTeacherRequest request) {
 
         Teacher teacher = findTeacherById(teacherId);
 
@@ -130,11 +132,6 @@ public class TeacherService {
 
         return teacherRepository.findById(id).orElseThrow(() -> new TeacherNotFoundException("Teacher could not be found by following ! " + id));
     }
-
-    protected boolean checkUsernameExists(String username){
-
-    }
-
 
 
 }

@@ -6,7 +6,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Stage 2:Run
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jdk-jammy
 WORKDIR /app
 COPY --from=build /app/target/*.jar teacher-service.jar
 EXPOSE 8080

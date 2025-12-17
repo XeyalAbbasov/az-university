@@ -13,6 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -29,6 +31,8 @@ public class UserService {
 
 
     public void addTeacherToUserInfo(Long teacherId, CreateTeacherRequest request) {
+
+        checkUsernameExists(request.getUsername());
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
@@ -82,6 +86,15 @@ public class UserService {
         UserDto dto = new UserDto();
         dto.setUserId(user.getId());
         return dto.getUserId();
+    }
+
+    protected void checkUsernameExists(String username){
+
+        Optional<UserInfo> user = userRepository.findByUsername(username);
+            if (user.isPresent()) {
+                //myexception ile de deyishe bilersen
+                throw  new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
+            }
     }
 
 
