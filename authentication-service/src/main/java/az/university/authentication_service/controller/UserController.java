@@ -1,8 +1,6 @@
 package az.university.authentication_service.controller;
 
-import az.university.authentication_service.dto.UserDto;
 import az.university.authentication_service.exception.MyException;
-import az.university.authentication_service.model.UserInfo;
 import az.university.authentication_service.request.AuthRequest;
 import az.university.authentication_service.request.CreateStudentRequest;
 import az.university.authentication_service.request.CreateTeacherRequest;
@@ -111,7 +109,7 @@ public class UserController {
     @GetMapping("/get-user")
     public ResponseEntity<Long> getUserIdByUsername(@RequestParam String username, @RequestHeader(value = "X-Internal-Key", required = false) String internalKey) {
 
-        Long userId = userService.getUserIdByUsername(username, internalKey);
+        Long userId = userService.getUserIdByUsername(username);
 
         return ResponseEntity.ok(userId);
     }

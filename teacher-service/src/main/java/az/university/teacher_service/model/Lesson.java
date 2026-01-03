@@ -31,6 +31,7 @@ public class Lesson {
     @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GradeComponent> components = new ArrayList<>();
 
+    //teacher id ni nece elave edeceyini dushun create zamani
     private Long teacherId;
 
     private Long tutorId;

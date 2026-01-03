@@ -21,9 +21,6 @@ public class Teacher {
     private String firstName;
     private String lastName;
     private String fatherName;
-    //burada username password lazim deyil chunki user repoda onlar var gelecekde siline biler
-    private String username;
-    private String password;
     private String email;
     private String phone;
     private boolean active;

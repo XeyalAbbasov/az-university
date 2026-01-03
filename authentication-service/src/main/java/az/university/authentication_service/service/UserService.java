@@ -48,6 +48,8 @@ public class UserService {
 
     public void addStudentToUserinfo(Long studentId, CreateStudentRequest request) {
 
+        checkUsernameExists(request.getUsername());
+
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         UserInfo user = new UserInfo();
@@ -62,6 +64,8 @@ public class UserService {
 
     public void addTutorToUserinfo(Long tutorId, CreateTutorRequest request) {
 
+        checkUsernameExists(request.getUsername());
+
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         UserInfo user = new UserInfo();
@@ -75,16 +79,11 @@ public class UserService {
 
     //security seviyyesinde yoxla gor hasninda tekce olanda ishlemir
 
-    public Long getUserIdByUsername(String username, String internalKey) {
-
-        if (internalKey == null || !internalApiKey.equals(internalKey)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid internal key");
-
-        }
+    public Long getUserIdByUsername(String username) {
 
         UserInfo user = findUserByUsername(username);
         UserDto dto = new UserDto();
-        dto.setUserId(user.getId());
+        dto.setUserId(user.getUserId());
         return dto.getUserId();
     }
 

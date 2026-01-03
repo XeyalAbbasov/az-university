@@ -18,8 +18,6 @@ public class Tutor {
     private String firstName;
     private String lastName;
     private String fatherName;
-    private String username;
-    private String password;
     private String email;
     private String phone;
     private boolean active;

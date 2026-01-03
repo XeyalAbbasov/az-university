@@ -74,10 +74,7 @@ public class TeacherService {
 
         teacherRepository.save(teacher);
 
-        TeacherAddResponse response = new TeacherAddResponse();
-        response.setTeacherId(teacher.getId());
-
-        return "Group has been updated successfully ";
+        return "Teacher has been updated successfully ";
     }
 
     public TeacherListResponse getAllTeachers() {

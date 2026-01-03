@@ -1,16 +1,21 @@
 package az.university.teacher_service.service;
 
 import az.university.teacher_service.client.AuthenticationClient;
+import az.university.teacher_service.exception.MyException;
 import az.university.teacher_service.exception.TutorNotFoundException;
 import az.university.teacher_service.model.Tutor;
 import az.university.teacher_service.repository.TutorRepository;
 import az.university.teacher_service.request.CreateTutorRequest;
+import az.university.teacher_service.request.UpdateTutorRequest;
 import az.university.teacher_service.response.TutorAddResponse;
+import az.university.teacher_service.util.Constants;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class TutorService {
 
 
@@ -27,19 +32,42 @@ public class TutorService {
     @Value("${internal.api.key}")
     private String internalApiKey;
 
-    public TutorAddResponse create(CreateTutorRequest request) {
+    public TutorAddResponse create(final CreateTutorRequest request) {
 
+        // burada tekce birinci sirf username i yoxla diger sedvelde daha sonra davam etsin.
+        //auth ichinde save ederken yoxlamaqa da ehtoyac olmasin
         Tutor tutor = new Tutor();
-        modelMapper.map(request,tutor);
+        modelMapper.map(request, tutor);
         tutor.setActive(true);
         tutorRepository.save(tutor);
 
-        authenticationClient.sendTutorToAuth(tutor.getId(),request,internalApiKey,"ROLE_CONTROL_TUTOR");
+        authenticationClient.sendTutorToAuth(tutor.getId(), request, internalApiKey, "ROLE_CONTROL_TUTOR");
 
         TutorAddResponse response = new TutorAddResponse();
         response.setTutorId(tutor.getId());
 
         return response;
+    }
+
+    public String update(Long tutorId, final UpdateTutorRequest request, String username) {
+
+        Tutor tutor = findTutorById(tutorId);
+
+        Long loggedId = authenticationClient.getUserIdByUsername(username, internalApiKey);
+
+        if (!tutor.getId().equals(loggedId)) {
+            throw new MyException("You must update your own lesson !", null, Constants.POSSESSION);
+        } else {
+            tutor.setFirstName(request.getFirstName());
+            tutor.setLastName(request.getLastName());
+            tutor.setFatherName(request.getFatherName());
+            tutor.setEmail(request.getEmail());
+            tutor.setPhone(request.getPhone());
+
+            tutorRepository.save(tutor);
+
+            return "Tutor has been updated successfully ";
+        }
     }
 
     public void activateTutor(Long tutorId) {
@@ -56,9 +84,9 @@ public class TutorService {
         tutorRepository.save(tutor);
     }
 
+    protected Tutor findTutorById(Long id) {
 
-    protected Tutor findTutorById(Long id){
-
-        return tutorRepository.findById(id).orElseThrow(()-> new TutorNotFoundException("Tutor could not be found by following ! "+id));
+        return tutorRepository.findById(id).orElseThrow(() -> new TutorNotFoundException("Tutor could not be found by following ! " + id));
     }
+
 }

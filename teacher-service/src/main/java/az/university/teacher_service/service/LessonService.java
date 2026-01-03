@@ -6,7 +6,6 @@ import az.university.teacher_service.exception.LessonNotFoundException;
 import az.university.teacher_service.exception.MyException;
 import az.university.teacher_service.model.Group;
 import az.university.teacher_service.model.Lesson;
-import az.university.teacher_service.model.Tutor;
 import az.university.teacher_service.repository.LessonRepository;
 import az.university.teacher_service.request.CreateLessonRequest;
 import az.university.teacher_service.request.UpdateLessonRequest;
@@ -43,8 +42,6 @@ public class LessonService {
 
     public LessonAddResponse create(String username, final CreateLessonRequest request) {
 
-        Tutor tutor = tutorService.findTutorById(request.getTutorId());
-
         Long tutorId = authenticationClient.getUserIdByUsername(username, internalApiKey);
 
         Lesson lesson = new Lesson();
@@ -54,6 +51,7 @@ public class LessonService {
         lesson.setSemester(request.getSemester());
         lesson.setCode(request.getCode());
         lesson.setTutorId(tutorId);
+        //teacher id ni nece elave edeceyini dushun create zamani
 
         lessonRepository.save(lesson);
 
@@ -66,12 +64,11 @@ public class LessonService {
 
     public String update(Long lessonId, String username, final UpdateLessonRequest request) {
 
-
         Lesson lesson = findLessonById(lessonId);
-        Tutor tutor = tutorService.findTutorById(lesson.getTutorId());
-        String lessonOwnerUsername = tutor.getUsername();
+        Long lessonOwnerId=lesson.getTutorId();
+        Long tutorId= authenticationClient.getUserIdByUsername(username,internalApiKey) ;
 
-        if (!username.equals(lessonOwnerUsername)) {
+        if (!lessonOwnerId.equals(tutorId)) {
             throw new MyException("You must update your own lesson !", null, Constants.POSSESSION);
         } else {
             modelMapper.map(request, lesson);

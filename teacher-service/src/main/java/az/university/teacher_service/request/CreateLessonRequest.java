@@ -25,8 +25,9 @@ public class CreateLessonRequest {
 
     @NotBlank(message = "Kod boş buraxıla bilməz!")
     private String code;
-    @NotNull(message = "Tutor id boş ola bilməz!")
-    private Long tutorId;
+    //tutoridni yigishdiriram burdan chunki avtomatlashdiracam tokenden extract edib insert edecem
+//    @NotNull(message = "Tutor id boş ola bilməz!")
+//    private Long tutorId;
 
     private Long teacherId;
 

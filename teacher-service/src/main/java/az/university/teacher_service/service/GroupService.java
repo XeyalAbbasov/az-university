@@ -71,10 +71,9 @@ public class GroupService {
     public String update(Long id,String tutorUsername, UpdateGroupRequest request) {
 
         Group group = findGroupById(id);
+        Long groupOwnerId = group.getCreatedBy();
 
         Long tutorId = authenticationClient.getUserIdByUsername(tutorUsername,internalApiKey);
-
-        Long groupOwnerId = group.getCreatedBy();
 
         if (groupOwnerId.equals(tutorId)) {
             group.setName(request.getName());
