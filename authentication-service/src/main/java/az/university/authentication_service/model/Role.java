@@ -16,9 +16,9 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     private String name;
-    private String academic;
-    private String teacher;
-    private String student;
+    private Integer academic;
+    private Integer teacher;
+    private Integer student;
 }

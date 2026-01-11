@@ -26,6 +26,11 @@ public interface AuthenticationClient {
                          @RequestHeader("X-Internal-Key") String internalApiKey,
                          @RequestHeader("X-USER-ROLES") String role);
 
+//student de userServise elave olunmalidir amma olunmayib novbeti stepde et bunu.
 
+
+    @GetMapping("/check-user")
+    void checkUsernameExists (@RequestParam String username,
+                              @RequestHeader("X-Internal-Key") String internalKey);
     
 }

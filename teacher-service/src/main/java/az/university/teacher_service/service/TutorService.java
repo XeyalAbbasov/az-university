@@ -34,8 +34,9 @@ public class TutorService {
 
     public TutorAddResponse create(final CreateTutorRequest request) {
 
-        // burada tekce birinci sirf username i yoxla diger sedvelde daha sonra davam etsin.
-        //auth ichinde save ederken yoxlamaqa da ehtoyac olmasin
+        //done
+        authenticationClient.checkUsernameExists(request.getUsername(),internalApiKey);
+
         Tutor tutor = new Tutor();
         modelMapper.map(request, tutor);
         tutor.setActive(true);

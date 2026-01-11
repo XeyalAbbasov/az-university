@@ -58,7 +58,7 @@ public class UserController {
     public ResponseEntity<Void> teacherRegistration(@RequestParam Long teacherId,
                                                     @RequestBody CreateTeacherRequest request,
                                                     @RequestHeader(value = "X-Internal-Key", required = false) String internalKey,
-                                                    @RequestHeader(value = "X-USER-ROLES",required = false) String rolesHeader) {
+                                                    @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
         System.out.println("rolesHeader = '" + rolesHeader + "'");
         List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
         if (!roles.contains("ROLE_CONTROL_TEACHER")) {
@@ -74,8 +74,8 @@ public class UserController {
     @PostMapping("student-registration")
     public ResponseEntity<Void> studentRegistration(@RequestParam Long studentId,
                                                     @RequestBody CreateStudentRequest request,
-                                                    @RequestHeader(value = "X-Internal-Key",required = false) String internalKey,
-                                                    @RequestHeader(value = "X-USER-ROLES",required = false)String rolesHeader) {
+                                                    @RequestHeader(value = "X-Internal-Key", required = false) String internalKey,
+                                                    @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
 
         System.out.println("rolesHeader = '" + rolesHeader + "'");
 
@@ -83,7 +83,7 @@ public class UserController {
         if (!roles.contains("ROLE_CONTROL_STUDENT")) {
             throw new MyException("Sizin tələbə qeydiyyat etmək hüququnuz yoxdur! ", null, Constants.POSSESSION);
         }
-        userService.addStudentToUserinfo(studentId,request);
+        userService.addStudentToUserinfo(studentId, request);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
 
@@ -91,9 +91,9 @@ public class UserController {
 
     @PostMapping("/tutor-registration")
     public ResponseEntity<Void> tutorRegistration(@RequestParam Long tutorId,
-                                                    @RequestBody CreateTutorRequest request,
-                                                    @RequestHeader(value = "X-Internal-Key", required = false) String internalKey,
-                                                    @RequestHeader(value = "X-USER-ROLES",required = false) String rolesHeader) {
+                                                  @RequestBody CreateTutorRequest request,
+                                                  @RequestHeader(value = "X-Internal-Key", required = false) String internalKey,
+                                                  @RequestHeader(value = "X-USER-ROLES", required = false) String rolesHeader) {
         System.out.println("rolesHeader = '" + rolesHeader + "'");
         List<String> roles = rolesHeader != null ? Arrays.asList(rolesHeader.split(",")) : List.of();
         if (!roles.contains("ROLE_CONTROL_TUTOR")) {
@@ -113,4 +113,13 @@ public class UserController {
 
         return ResponseEntity.ok(userId);
     }
+
+    @GetMapping("/check-user")
+    public ResponseEntity<Void> checkUsernameExists(@RequestParam String username, @RequestHeader(value = "X-Internal-Key", required = false) String internalKey) {
+
+        userService.checkUsernameExists(username);
+
+        return ResponseEntity.ok().build();
+    }
+
 }

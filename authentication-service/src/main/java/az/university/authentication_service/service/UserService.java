@@ -2,7 +2,9 @@ package az.university.authentication_service.service;
 
 import az.university.authentication_service.dto.UserDto;
 import az.university.authentication_service.exception.UserNotFoundException;
+import az.university.authentication_service.model.Role;
 import az.university.authentication_service.model.UserInfo;
+import az.university.authentication_service.repository.RoleRepository;
 import az.university.authentication_service.repository.UserRepository;
 import az.university.authentication_service.request.CreateStudentRequest;
 import az.university.authentication_service.request.CreateTeacherRequest;
@@ -13,17 +15,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
 
+    private  RoleRepository roleRepository;
     private UserRepository userRepository;
     private BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
     @Value("${internal.api.key}")
@@ -64,7 +69,7 @@ public class UserService {
 
     public void addTutorToUserinfo(Long tutorId, CreateTutorRequest request) {
 
-        checkUsernameExists(request.getUsername());
+//        checkUsernameExists(request.getUsername());
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
@@ -75,6 +80,11 @@ public class UserService {
         user.setTypeOfUser("tutor");
         user.setUserId(tutorId);
         userRepository.save(user);
+
+        List<Role> roles = roleRepository.findByAcademic(1);
+        user.getRoles().addAll(roles);
+        userRepository.save(user);
+
     }
 
     //security seviyyesinde yoxla gor hasninda tekce olanda ishlemir
@@ -87,7 +97,7 @@ public class UserService {
         return dto.getUserId();
     }
 
-    protected void checkUsernameExists(String username){
+    public void checkUsernameExists(String username){
 
         Optional<UserInfo> user = userRepository.findByUsername(username);
             if (user.isPresent()) {

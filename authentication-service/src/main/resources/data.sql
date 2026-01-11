@@ -32,3 +32,6 @@ VALUES (2, 7);
 -- select 'xeyal777', authority
 -- from authority_list
 -- where librarian = 1;
+
+-- INSERT INTO user_roles (user_id,role_id)
+-- select 1,role_id from roles where academic = 1
